@@ -10,7 +10,7 @@ import { Button } from '@components/ui/button';
 import { HeroIcon } from '@components/ui/hero-icon';
 import { ToolTip } from '@components/ui/tooltip';
 import type { MotionProps } from 'framer-motion';
-import type { ImagesPreview, ImageData } from '@lib/types/file';
+import type { ImagesPreview, MediaData } from '@lib/types/file';
 
 type ImagePreviewProps = {
   tweet?: boolean;
@@ -48,7 +48,7 @@ export function ImagePreview({
   removeImage
 }: ImagePreviewProps): JSX.Element {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [selectedImage, setSelectedImage] = useState<ImageData | null>(null);
+  const [selectedImage, setSelectedImage] = useState<MediaData | null>(null);
 
   const { open, openModal, closeModal } = useModal();
 
@@ -99,7 +99,7 @@ export function ImagePreview({
       >
         <ImageModal
           tweet={isTweet}
-          imageData={selectedImage as ImageData}
+          imageData={selectedImage as MediaData}
           previewCount={previewCount}
           selectedIndex={selectedIndex}
           handleNextIndex={handleNextIndex}
@@ -125,30 +125,34 @@ export function ImagePreview({
             layout={!isTweet ? true : false}
             key={id}
           >
-            <NextImage
-              className='relative h-full w-full cursor-pointer transition 
-                         hover:brightness-75 hover:duration-200'
-              imgClassName={cn(
-                isTweet
-                  ? postImageBorderRadius[previewCount][index]
-                  : 'rounded-2xl'
-              )}
-              previewCount={previewCount}
-              layout='fill'
-              src={src}
-              alt={alt}
-              useSkeleton={isTweet}
-            />
-            {removeImage && (
-              <Button
-                className='group absolute top-0 left-0 translate-x-1 translate-y-1
-                           bg-light-primary/75 p-1 backdrop-blur-sm 
-                           hover:bg-image-preview-hover/75'
-                onClick={preventBubbling(removeImage(id))}
-              >
-                <HeroIcon className='h-5 w-5 text-white' iconName='XMarkIcon' />
-                <ToolTip className='translate-y-2' tip='Remove' />
-              </Button>
+            {imagesPreview[index].type === undefined ||
+            !imagesPreview[index].type?.includes('video') ? (
+              <NextImage
+                className='relative h-full w-full cursor-pointer transition 
+                          hover:brightness-75 hover:duration-200'
+                imgClassName={cn(
+                  isTweet
+                    ? postImageBorderRadius[previewCount][index]
+                    : 'rounded-2xl'
+                )}
+                previewCount={previewCount}
+                layout='fill'
+                src={src}
+                alt={alt}
+                useSkeleton={isTweet}
+              />
+            ) : (
+              <video
+                className={cn(
+                  `relative h-full w-full cursor-pointer transition 
+                  hover:brightness-75 hover:duration-200`,
+                  isTweet
+                    ? postImageBorderRadius[previewCount][index]
+                    : 'rounded-2xl'
+                )}
+                src={src}
+                controls
+              />
             )}
           </motion.button>
         ))}

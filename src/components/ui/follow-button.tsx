@@ -5,6 +5,7 @@ import { preventBubbling } from '@lib/utils';
 import { Modal } from '@components/modal/modal';
 import { ActionModal } from '@components/modal/action-modal';
 import { Button } from '@components/ui/button';
+import { SignedOutModal } from '@components/modal/signed-out-modal';
 
 type FollowButtonProps = {
   userTargetId: string;
@@ -17,10 +18,17 @@ export function FollowButton({
 }: FollowButtonProps): JSX.Element | null {
   const { user } = useAuth();
   const { open, openModal, closeModal } = useModal();
+  const {
+    open: openSignedOut,
+    openModal: signedOutOpenModal,
+    closeModal: signedOutCloseModal
+  } = useModal();
 
   if (user?.id === userTargetId) return null;
 
   const { id: userId, following } = user ?? {};
+
+  const isLoggedIn = !!user;
 
   const handleFollow = (): Promise<void> =>
     manageFollow('follow', userId as string, userTargetId);
@@ -35,6 +43,13 @@ export function FollowButton({
   return (
     <>
       <Modal
+        modalClassName='max-w-lg bg-main-background w-full p-8 rounded-2xl'
+        open={openSignedOut}
+        closeModal={signedOutCloseModal}
+      >
+        <SignedOutModal closeModal={signedOutCloseModal} />
+      </Modal>
+      <Modal
         modalClassName='flex flex-col gap-6 max-w-xs bg-main-background w-full p-8 rounded-2xl'
         open={open}
         closeModal={closeModal}
@@ -47,22 +62,37 @@ export function FollowButton({
           closeModal={closeModal}
         />
       </Modal>
-      {userIsFollowed ? (
-        <Button
-          className='dark-bg-tab min-w-[106px] self-start border border-light-line-reply px-4 py-1.5 
-                     font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
-                     hover:before:content-["Unfollow"] inner:hover:hidden dark:border-light-secondary'
-          onClick={preventBubbling(openModal)}
-        >
-          <span>Following</span>
-        </Button>
+
+      {isLoggedIn ? (
+        <>
+          {userIsFollowed ? (
+            <Button
+              className='dark-bg-tab min-w-[106px] self-start border border-light-line-reply px-4 py-1.5 
+                      font-bold hover:border-accent-red hover:bg-accent-red/10 hover:text-accent-red
+                      hover:before:content-["Unfollow"] inner:hover:hidden dark:border-light-secondary'
+              onClick={preventBubbling(openModal)}
+            >
+              <span>Following</span>
+            </Button>
+          ) : (
+            <Button
+              className='self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90 
+                      focus-visible:bg-light-primary/90 active:bg-light-border/75 dark:bg-light-border 
+                      dark:text-light-primary dark:hover:bg-light-border/90 dark:focus-visible:bg-light-border/90 
+                      dark:active:bg-light-border/75'
+              onClick={preventBubbling(handleFollow)}
+            >
+              Follow
+            </Button>
+          )}
+        </>
       ) : (
         <Button
           className='self-start border bg-light-primary px-4 py-1.5 font-bold text-white hover:bg-light-primary/90 
                      focus-visible:bg-light-primary/90 active:bg-light-border/75 dark:bg-light-border 
                      dark:text-light-primary dark:hover:bg-light-border/90 dark:focus-visible:bg-light-border/90 
                      dark:active:bg-light-border/75'
-          onClick={preventBubbling(handleFollow)}
+          onClick={preventBubbling(signedOutOpenModal)}
         >
           Follow
         </Button>

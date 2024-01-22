@@ -3,10 +3,10 @@ import { Button } from '@components/ui/button';
 import { NextImage } from '@components/ui/next-image';
 import { Modal } from '@components/modal/modal';
 import { ImageModal } from '@components/modal/image-modal';
-import type { ImageData } from '@lib/types/file';
+import type { MediaData } from '@lib/types/file';
 
 type UserHomeCoverProps = {
-  coverData?: ImageData | null;
+  coverData?: MediaData | null;
 };
 
 export function UserHomeCover({ coverData }: UserHomeCoverProps): JSX.Element {
@@ -15,7 +15,7 @@ export function UserHomeCover({ coverData }: UserHomeCoverProps): JSX.Element {
   return (
     <div className='mt-0.5 h-36 xs:h-48 sm:h-52'>
       <Modal open={open} closeModal={closeModal}>
-        <ImageModal imageData={coverData as ImageData} previewCount={1} />
+        <ImageModal imageData={coverData as MediaData} previewCount={1} />
       </Modal>
       {coverData ? (
         <Button

@@ -1,3 +1,4 @@
+import cn from 'clsx';
 import Link from 'next/link';
 import { useAuth } from '@lib/context/auth-context';
 import { useWindow } from '@lib/context/window-context';
@@ -9,6 +10,7 @@ import { Button } from '@components/ui/button';
 import { SidebarLink } from './sidebar-link';
 import { MoreSettings } from './more-settings';
 import { SidebarProfile } from './sidebar-profile';
+import { SignedOutModal } from '@components/modal/signed-out-modal';
 import type { IconName } from '@components/ui/hero-icon';
 
 export type NavLink = {
@@ -63,6 +65,8 @@ export function Sidebar(): JSX.Element {
   const { user } = useAuth();
   const { isMobile } = useWindow();
 
+  const isLoggedIn = !!user;
+
   const { open, openModal, closeModal } = useModal();
 
   const username = user?.username as string;
@@ -74,12 +78,23 @@ export function Sidebar(): JSX.Element {
                  lg:max-w-none xl:-mr-4 xl:w-full xl:max-w-xs xl:justify-end'
     >
       <Modal
-        className='flex items-start justify-center'
-        modalClassName='bg-main-background rounded-2xl max-w-xl w-full mt-8 overflow-hidden'
+        className={cn(
+          'flex justify-center',
+          isLoggedIn ? 'items-start' : 'items-center'
+        )}
+        modalClassName={cn(
+          isLoggedIn
+            ? 'bg-main-background rounded-2xl max-w-xl w-full mt-8 overflow-hidden'
+            : 'max-w-lg bg-main-background w-full p-8 rounded-2xl'
+        )}
         open={open}
         closeModal={closeModal}
       >
-        <Input modal closeModal={closeModal} />
+        {isLoggedIn ? (
+          <Input modal closeModal={closeModal} />
+        ) : (
+          <SignedOutModal closeModal={closeModal} />
+        )}
       </Modal>
       <div
         className='fixed bottom-0 z-10 flex w-full flex-col justify-between border-t border-light-border 
@@ -102,12 +117,15 @@ export function Sidebar(): JSX.Element {
             {navLinks.map(({ ...linkData }) => (
               <SidebarLink {...linkData} key={linkData.href} />
             ))}
-            <SidebarLink
-              href={`/user/${username}`}
-              username={username}
-              linkName='Profile'
-              iconName='UserIcon'
-            />
+
+            {isLoggedIn && (
+              <SidebarLink
+                href={`/user/${username}`}
+                username={username}
+                linkName='Profile'
+                iconName='UserIcon'
+              />
+            )}
             {!isMobile && <MoreSettings />}
           </nav>
           <Button

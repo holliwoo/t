@@ -65,13 +65,11 @@ export default function UserWithReplies(): JSX.Element {
 }
 
 UserWithReplies.getLayout = (page: ReactElement): ReactNode => (
-  <ProtectedLayout>
-    <MainLayout>
-      <UserLayout>
-        <UserDataLayout>
-          <UserHomeLayout>{page}</UserHomeLayout>
-        </UserDataLayout>
-      </UserLayout>
-    </MainLayout>
-  </ProtectedLayout>
+  <MainLayout>
+    <UserLayout>
+      <UserDataLayout>
+        <UserHomeLayout>{page}</UserHomeLayout>
+      </UserDataLayout>
+    </UserLayout>
+  </MainLayout>
 );

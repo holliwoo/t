@@ -16,12 +16,14 @@ type TweetShareProps = {
   userId: string;
   tweetId: string;
   viewTweet?: boolean;
+  isLoggedIn: boolean;
 };
 
 export function TweetShare({
   userId,
   tweetId,
-  viewTweet
+  viewTweet,
+  isLoggedIn
 }: TweetShareProps): JSX.Element {
   const { userBookmarks } = useAuth();
 
@@ -94,28 +96,33 @@ export function TweetShare({
                   <HeroIcon iconName='LinkIcon' />
                   Copy link to Tweet
                 </Popover.Button>
-                {!tweetIsBookmarked ? (
-                  <Popover.Button
-                    className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
-                    as={Button}
-                    onClick={preventBubbling(
-                      handleBookmark(close, 'bookmark', userId, tweetId)
+
+                {isLoggedIn && (
+                  <>
+                    {!tweetIsBookmarked ? (
+                      <Popover.Button
+                        className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
+                        as={Button}
+                        onClick={preventBubbling(
+                          handleBookmark(close, 'bookmark', userId, tweetId)
+                        )}
+                      >
+                        <HeroIcon iconName='BookmarkIcon' />
+                        Bookmark
+                      </Popover.Button>
+                    ) : (
+                      <Popover.Button
+                        className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
+                        as={Button}
+                        onClick={preventBubbling(
+                          handleBookmark(close, 'unbookmark', userId, tweetId)
+                        )}
+                      >
+                        <HeroIcon iconName='BookmarkSlashIcon' />
+                        Remove Tweet from Bookmarks
+                      </Popover.Button>
                     )}
-                  >
-                    <HeroIcon iconName='BookmarkIcon' />
-                    Bookmark
-                  </Popover.Button>
-                ) : (
-                  <Popover.Button
-                    className='accent-tab flex w-full gap-3 rounded-md rounded-t-none p-4 hover:bg-main-sidebar-background'
-                    as={Button}
-                    onClick={preventBubbling(
-                      handleBookmark(close, 'unbookmark', userId, tweetId)
-                    )}
-                  >
-                    <HeroIcon iconName='BookmarkSlashIcon' />
-                    Remove Tweet from Bookmarks
-                  </Popover.Button>
+                  </>
                 )}
               </Popover.Panel>
             )}

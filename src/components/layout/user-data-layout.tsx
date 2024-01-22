@@ -16,7 +16,7 @@ export function UserDataLayout({ children }: LayoutProps): JSX.Element {
   } = useRouter();
 
   const { data, loading } = useCollection(
-    query(usersCollection, where('username', '==', id), limit(1)),
+    query(usersCollection, where('username', '==', id ?? ' '), limit(1)),
     { allowNull: true }
   );
 

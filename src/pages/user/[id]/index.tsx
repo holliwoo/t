@@ -31,7 +31,7 @@ export default function UserTweets(): JSX.Element {
   const { data: ownerTweets, loading: ownerLoading } = useCollection(
     query(
       tweetsCollection,
-      where('createdBy', '==', id),
+      where('createdBy', '==', id ?? ' '),
       where('parent', '==', null)
     ),
     { includeUser: true, allowNull: true }
@@ -40,8 +40,8 @@ export default function UserTweets(): JSX.Element {
   const { data: peopleTweets, loading: peopleLoading } = useCollection(
     query(
       tweetsCollection,
-      where('createdBy', '!=', id),
-      where('userRetweets', 'array-contains', id)
+      where('createdBy', '!=', id ?? ' '),
+      where('userRetweets', 'array-contains', id ?? ' ')
     ),
     { includeUser: true, allowNull: true }
   );
@@ -72,13 +72,11 @@ export default function UserTweets(): JSX.Element {
 }
 
 UserTweets.getLayout = (page: ReactElement): ReactNode => (
-  <ProtectedLayout>
-    <MainLayout>
-      <UserLayout>
-        <UserDataLayout>
-          <UserHomeLayout>{page}</UserHomeLayout>
-        </UserDataLayout>
-      </UserLayout>
-    </MainLayout>
-  </ProtectedLayout>
+  <MainLayout>
+    <UserLayout>
+      <UserDataLayout>
+        <UserHomeLayout>{page}</UserHomeLayout>
+      </UserDataLayout>
+    </UserLayout>
+  </MainLayout>
 );

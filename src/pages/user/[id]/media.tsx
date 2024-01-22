@@ -57,13 +57,11 @@ export default function UserMedia(): JSX.Element {
 }
 
 UserMedia.getLayout = (page: ReactElement): ReactNode => (
-  <ProtectedLayout>
-    <MainLayout>
-      <UserLayout>
-        <UserDataLayout>
-          <UserHomeLayout>{page}</UserHomeLayout>
-        </UserDataLayout>
-      </UserLayout>
-    </MainLayout>
-  </ProtectedLayout>
+  <MainLayout>
+    <UserLayout>
+      <UserDataLayout>
+        <UserHomeLayout>{page}</UserHomeLayout>
+      </UserDataLayout>
+    </UserLayout>
+  </MainLayout>
 );

@@ -20,14 +20,19 @@ export function UpdateUsername(): JSX.Element {
   const [available, setAvailable] = useState(false);
   const [loading, setLoading] = useState(false);
   const [visited, setVisited] = useState(false);
+  const [searching, setSearching] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   const { user } = useAuth();
   const { open, openModal, closeModal } = useModal();
 
+  const isLoggedIn = !!user;
+
   useEffect(() => {
     const checkAvailability = async (value: string): Promise<void> => {
+      setSearching(true);
+
       const empty = await checkUsernameAvailability(value);
 
       if (empty) setAvailable(true);
@@ -35,6 +40,8 @@ export function UpdateUsername(): JSX.Element {
         setAvailable(false);
         setErrorMessage('This username has been taken. Please choose another.');
       }
+
+      setSearching(false);
     };
 
     if (!visited && inputValue.length > 0) setVisited(true);
@@ -52,7 +59,7 @@ export function UpdateUsername(): JSX.Element {
   }, [inputValue]);
 
   useEffect(() => {
-    if (!user?.updatedAt) openModal();
+    if (!user?.updatedAt && isLoggedIn) openModal();
     else setAlreadySet(true);
   }, []);
 
@@ -62,6 +69,8 @@ export function UpdateUsername(): JSX.Element {
     e.preventDefault();
 
     if (!available) return;
+
+    if (searching) return;
 
     setLoading(true);
 
@@ -82,6 +91,7 @@ export function UpdateUsername(): JSX.Element {
 
   const cancelUpdateUsername = (): void => {
     closeModal();
+
     if (!alreadySet) void updateUsername(user?.id as string);
   };
 
@@ -113,15 +123,18 @@ export function UpdateUsername(): JSX.Element {
           />
         </UsernameModal>
       </Modal>
-      <Button
-        className='dark-bg-tab group relative p-2 hover:bg-light-primary/10
+
+      {isLoggedIn && (
+        <Button
+          className='dark-bg-tab group relative p-2 hover:bg-light-primary/10
                    active:bg-light-primary/20 dark:hover:bg-dark-primary/10 
                    dark:active:bg-dark-primary/20'
-        onClick={openModal}
-      >
-        <HeroIcon className='h-5 w-5' iconName='SparklesIcon' />
-        <ToolTip tip='Top tweets' />
-      </Button>
+          onClick={openModal}
+        >
+          <HeroIcon className='h-5 w-5' iconName='SparklesIcon' />
+          <ToolTip tip='Top tweets' />
+        </Button>
+      )}
     </>
   );
 }

@@ -21,9 +21,11 @@ import type { ReactElement, ReactNode } from 'react';
 export default function People(): JSX.Element {
   const { user } = useAuth();
 
+  const isLoggedIn = !!user;
+
   const { data, loading, LoadMore } = useInfiniteScroll(
     usersCollection,
-    [where('id', '!=', user?.id)],
+    [where('id', '!=', user?.id ?? ' ')],
     { allowNull: true, preserve: true },
     { marginBottom: 500 }
   );
@@ -55,9 +57,7 @@ export default function People(): JSX.Element {
 }
 
 People.getLayout = (page: ReactElement): ReactNode => (
-  <ProtectedLayout>
-    <MainLayout>
-      <PeopleLayout>{page}</PeopleLayout>
-    </MainLayout>
-  </ProtectedLayout>
+  <MainLayout>
+    <PeopleLayout>{page}</PeopleLayout>
+  </MainLayout>
 );

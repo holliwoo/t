@@ -13,7 +13,7 @@ import {
 } from '@lib/firebase/utils';
 import { useAuth } from '@lib/context/auth-context';
 import { sleep } from '@lib/utils';
-import { getImagesData } from '@lib/validation';
+import { getImagesData, getMediaData } from '@lib/validation';
 import { UserAvatar } from '@components/user/user-avatar';
 import { InputForm, fromTop } from './input-form';
 import { ImagePreview } from './image-preview';
@@ -23,7 +23,7 @@ import type { WithFieldValue } from 'firebase/firestore';
 import type { Variants } from 'framer-motion';
 import type { User } from '@lib/types/user';
 import type { Tweet } from '@lib/types/tweet';
-import type { FilesWithId, ImagesPreview, ImageData } from '@lib/types/file';
+import type { FilesWithId, ImagesPreview, MediaData } from '@lib/types/file';
 
 type InputProps = {
   modal?: boolean;
@@ -55,8 +55,10 @@ export function Input({
   const [loading, setLoading] = useState(false);
   const [visited, setVisited] = useState(false);
 
-  const { user, isAdmin } = useAuth();
-  const { name, username, photoURL } = user as User;
+  const { user, isAdmin, signInWithGoogle } = useAuth();
+  const { name, username, photoURL } = (user as User) ?? {};
+
+  const isLoggedIn = !!user;
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -136,7 +138,7 @@ export function Input({
 
     const files = isClipboardEvent ? e.clipboardData.files : e.target.files;
 
-    const imagesData = getImagesData(files, previewCount);
+    const imagesData = getMediaData(files);
 
     if (!imagesData) {
       toast.error('Please choose a GIF or photo up to 4');
@@ -157,7 +159,7 @@ export function Input({
 
     const { src } = imagesPreview.find(
       ({ id }) => id === targetId
-    ) as ImageData;
+    ) as MediaData;
 
     URL.revokeObjectURL(src);
   };
@@ -183,7 +185,13 @@ export function Input({
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    void sendTweet();
+
+    if (isLoggedIn) {
+      void sendTweet();
+      return;
+    }
+
+    signInWithGoogle();
   };
 
   const handleFocus = (): void => setVisited(!loading);
@@ -208,77 +216,94 @@ export function Input({
       })}
       onSubmit={handleSubmit}
     >
-      {loading && (
-        <motion.i className='h-1 animate-pulse bg-main-accent' {...variants} />
-      )}
-      {children}
-      {reply && visited && (
-        <motion.p
-          className='ml-[75px] -mb-2 mt-2 text-light-secondary dark:text-dark-secondary'
-          {...fromTop}
-        >
-          Replying to{' '}
-          <Link href={`/user/${parent?.username as string}`}>
-            <a className='custom-underline text-main-accent'>
-              {parent?.username as string}
-            </a>
-          </Link>
-        </motion.p>
-      )}
-      <label
-        className={cn(
-          'hover-animation grid w-full grid-cols-[auto,1fr] gap-3 px-4 py-3',
-          reply
-            ? 'pt-3 pb-1'
-            : replyModal
-            ? 'pt-0'
-            : 'border-b-2 border-light-border dark:border-dark-border',
-          (disabled || loading) && 'pointer-events-none opacity-50'
-        )}
-        htmlFor={formId}
-      >
-        <UserAvatar src={photoURL} alt={name} username={username} />
-        <div className='flex w-full flex-col gap-4'>
-          <InputForm
-            modal={modal}
-            reply={reply}
-            formId={formId}
-            visited={visited}
-            loading={loading}
-            inputRef={inputRef}
-            replyModal={replyModal}
-            inputValue={inputValue}
-            isValidTweet={isValidTweet}
-            isUploadingImages={isUploadingImages}
-            sendTweet={sendTweet}
-            handleFocus={handleFocus}
-            discardTweet={discardTweet}
-            handleChange={handleChange}
-            handleImageUpload={handleImageUpload}
+      {isLoggedIn ? (
+        <>
+          {loading && (
+            <motion.i
+              className='h-1 animate-pulse bg-main-accent'
+              {...variants}
+            />
+          )}
+          {children}
+          {reply && visited && (
+            <motion.p
+              className='ml-[75px] -mb-2 mt-2 text-light-secondary dark:text-dark-secondary'
+              {...fromTop}
+            >
+              Replying to{' '}
+              <Link href={`/user/${parent?.username as string}`}>
+                <a className='custom-underline text-main-accent'>
+                  {parent?.username as string}
+                </a>
+              </Link>
+            </motion.p>
+          )}
+          <label
+            className={cn(
+              'hover-animation grid w-full grid-cols-[auto,1fr] gap-3 px-4 py-3',
+              reply
+                ? 'pt-3 pb-1'
+                : replyModal
+                ? 'pt-0'
+                : 'border-b-2 border-light-border dark:border-dark-border',
+              (disabled || loading) && 'pointer-events-none opacity-50'
+            )}
+            htmlFor={formId}
           >
-            {isUploadingImages && (
-              <ImagePreview
-                imagesPreview={imagesPreview}
-                previewCount={previewCount}
-                removeImage={!loading ? removeImage : undefined}
-              />
-            )}
-          </InputForm>
-          <AnimatePresence initial={false}>
-            {(reply ? reply && visited && !loading : !loading) && (
-              <InputOptions
-                reply={reply}
+            <UserAvatar src={photoURL} alt={name} username={username} />
+            <div className='flex w-full flex-col gap-4'>
+              <InputForm
                 modal={modal}
-                inputLimit={inputLimit}
-                inputLength={inputLength}
+                reply={reply}
+                formId={formId}
+                visited={visited}
+                loading={loading}
+                inputRef={inputRef}
+                replyModal={replyModal}
+                inputValue={inputValue}
                 isValidTweet={isValidTweet}
-                isCharLimitExceeded={isCharLimitExceeded}
+                isUploadingImages={isUploadingImages}
+                sendTweet={sendTweet}
+                handleFocus={handleFocus}
+                discardTweet={discardTweet}
+                handleChange={handleChange}
                 handleImageUpload={handleImageUpload}
-              />
-            )}
-          </AnimatePresence>
+              >
+                {isUploadingImages && (
+                  <ImagePreview
+                    imagesPreview={imagesPreview}
+                    previewCount={previewCount}
+                    removeImage={!loading ? removeImage : undefined}
+                  />
+                )}
+              </InputForm>
+              <AnimatePresence initial={false}>
+                {(reply ? reply && visited && !loading : !loading) && (
+                  <InputOptions
+                    reply={reply}
+                    modal={modal}
+                    inputLimit={inputLimit}
+                    inputLength={inputLength}
+                    isValidTweet={isValidTweet}
+                    isCharLimitExceeded={isCharLimitExceeded}
+                    handleImageUpload={handleImageUpload}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
+          </label>
+        </>
+      ) : (
+        <div className='w-full px-5 pt-4'>
+          <button
+            className='accent-tab w-full rounded-full bg-main-accent p-2 text-lg
+                       font-bold text-white outline-none transition hover:brightness-90 active:brightness-75
+                       xs:static xs:translate-y-0 xs:hover:bg-main-accent/90 xs:active:bg-main-accent/75'
+          >
+            Log in to <span>{reply ? 'reply' : 'Tweet'}</span>
+          </button>
         </div>
-      </label>
+      )}
     </form>
   );
 }

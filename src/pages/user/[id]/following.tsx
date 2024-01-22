@@ -10,13 +10,11 @@ export default function UserFollowing(): JSX.Element {
 }
 
 UserFollowing.getLayout = (page: ReactElement): ReactNode => (
-  <ProtectedLayout>
-    <MainLayout>
-      <UserLayout>
-        <UserDataLayout>
-          <UserFollowLayout>{page}</UserFollowLayout>
-        </UserDataLayout>
-      </UserLayout>
-    </MainLayout>
-  </ProtectedLayout>
+  <MainLayout>
+    <UserLayout>
+      <UserDataLayout>
+        <UserFollowLayout>{page}</UserFollowLayout>
+      </UserDataLayout>
+    </UserLayout>
+  </MainLayout>
 );

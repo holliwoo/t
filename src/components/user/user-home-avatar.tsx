@@ -3,10 +3,10 @@ import { Button } from '@components/ui/button';
 import { NextImage } from '@components/ui/next-image';
 import { Modal } from '@components/modal/modal';
 import { ImageModal } from '@components/modal/image-modal';
-import type { ImageData } from '@lib/types/file';
+import type { MediaData } from '@lib/types/file';
 
 type UserHomeAvatarProps = {
-  profileData?: ImageData | null;
+  profileData?: MediaData | null;
 };
 
 export function UserHomeAvatar({
@@ -19,7 +19,7 @@ export function UserHomeAvatar({
       <Modal open={open} closeModal={closeModal}>
         <ImageModal
           imageData={
-            { src: profileData?.src, alt: profileData?.alt } as ImageData
+            { src: profileData?.src, alt: profileData?.alt } as MediaData
           }
           previewCount={1}
         />

@@ -15,10 +15,17 @@ import { variants } from './more-settings';
 import type { User } from '@lib/types/user';
 
 export function SidebarProfile(): JSX.Element {
-  const { user, signOut } = useAuth();
+  const { user, signOut, signInWithGoogle } = useAuth();
   const { open, openModal, closeModal } = useModal();
 
-  const { name, username, verified, photoURL } = user as User;
+  const { name, username, verified, photoURL } = (user as User) ?? {};
+
+  const isLoggedIn = user;
+
+  const handleClick = () => {
+    signOut();
+    closeModal();
+  };
 
   return (
     <>
@@ -33,33 +40,53 @@ export function SidebarProfile(): JSX.Element {
           title='Log out of Twitter?'
           description='You can always log back in at any time. If you just want to switch accounts, you can do that by adding an existing account.'
           mainBtnLabel='Log out'
-          action={signOut}
+          action={handleClick}
           closeModal={closeModal}
         />
       </Modal>
       <Menu className='relative' as='section'>
         {({ open }): JSX.Element => (
           <>
-            <Menu.Button
-              className={cn(
-                `custom-button main-tab dark-bg-tab flex w-full items-center 
+            {isLoggedIn ? (
+              <Menu.Button
+                className={cn(
+                  `custom-button main-tab dark-bg-tab flex w-full items-center 
                  justify-between hover:bg-light-primary/10 active:bg-light-primary/20
                  dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20`,
-                open && 'bg-light-primary/10 dark:bg-dark-primary/10'
-              )}
-            >
-              <div className='flex gap-3 truncate'>
-                <UserAvatar src={photoURL} alt={name} size={40} />
-                <div className='hidden truncate text-start leading-5 xl:block'>
-                  <UserName name={name} className='start' verified={verified} />
-                  <UserUsername username={username} disableLink />
+                  open && 'bg-light-primary/10 dark:bg-dark-primary/10'
+                )}
+              >
+                <div className='flex gap-3 truncate'>
+                  <UserAvatar src={photoURL} alt={name} size={40} />
+                  <div className='hidden truncate text-start leading-5 xl:block'>
+                    <UserName
+                      name={name}
+                      className='start'
+                      verified={verified}
+                    />
+                    <UserUsername username={username} disableLink />
+                  </div>
                 </div>
-              </div>
-              <HeroIcon
-                className='hidden h-6 w-6 xl:block'
-                iconName='EllipsisHorizontalIcon'
-              />
-            </Menu.Button>
+                <HeroIcon
+                  className='hidden h-6 w-6 xl:block'
+                  iconName='EllipsisHorizontalIcon'
+                />
+              </Menu.Button>
+            ) : (
+              <button
+                className={cn(
+                  `custom-button main-tab dark-bg-tab flex w-full items-center 
+                 justify-between hover:bg-light-primary/10 active:bg-light-primary/20
+                 dark:hover:bg-dark-primary/10 dark:active:bg-dark-primary/20`,
+                  open && 'bg-light-primary/10 dark:bg-dark-primary/10'
+                )}
+                onClick={signInWithGoogle}
+              >
+                <div className='hidden w-full truncate text-center leading-5 xl:block'>
+                  <p className='font-bold'>Log in</p>
+                </div>
+              </button>
+            )}
             <AnimatePresence>
               {open && (
                 <Menu.Items

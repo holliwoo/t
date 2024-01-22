@@ -56,9 +56,7 @@ export default function Home(): JSX.Element {
 }
 
 Home.getLayout = (page: ReactElement): ReactNode => (
-  <ProtectedLayout>
-    <MainLayout>
-      <HomeLayout>{page}</HomeLayout>
-    </MainLayout>
-  </ProtectedLayout>
+  <MainLayout>
+    <HomeLayout>{page}</HomeLayout>
+  </MainLayout>
 );

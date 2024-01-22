@@ -20,7 +20,9 @@ const variant: Variants = {
 export function MobileSidebar(): JSX.Element {
   const { user } = useAuth();
 
-  const { photoURL, name } = user as User;
+  const { photoURL, name } = (user as User) ?? {};
+
+  const isLoggedIn = !!user;
 
   const { open, openModal, closeModal } = useModal();
 
@@ -36,7 +38,11 @@ export function MobileSidebar(): JSX.Element {
         <MobileSidebarModal {...(user as User)} closeModal={closeModal} />
       </Modal>
       <Button className='accent-tab p-0 xs:hidden' onClick={openModal}>
-        <UserAvatar src={photoURL} alt={name} size={30} />
+        {isLoggedIn ? (
+          <UserAvatar src={photoURL} alt={name} size={30} />
+        ) : (
+          <></>
+        )}
       </Button>
     </>
   );

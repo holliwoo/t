@@ -3,12 +3,12 @@ import type {
   FirestoreDataConverter
 } from 'firebase-admin/firestore';
 
-export type ImageData = {
+export type MediaData = {
   src: string;
   alt: string;
 };
 
-export type ImagesPreview = (ImageData & {
+export type ImagesPreview = (MediaData & {
   id: number;
 })[];
 

@@ -7,6 +7,10 @@ import { ViewTweetStats } from '@components/view/view-tweet-stats';
 import { TweetOption } from './tweet-option';
 import { TweetShare } from './tweet-share';
 import type { Tweet } from '@lib/types/tweet';
+import { Modal } from '@components/modal/modal';
+import { SignedOutModal } from '@components/modal/signed-out-modal';
+import { useModal } from '@lib/hooks/useModal';
+import { preventBubbling } from '@lib/utils';
 
 type TweetStatsProps = Pick<
   Tweet,
@@ -33,6 +37,8 @@ export function TweetStats({
 }: TweetStatsProps): JSX.Element {
   const totalLikes = userLikes.length;
   const totalTweets = userRetweets.length;
+
+  const { open, openModal: signedOutOpenModal, closeModal } = useModal();
 
   const [{ currentReplies, currentTweets, currentLikes }, setCurrentStats] =
     useState({
@@ -69,8 +75,18 @@ export function TweetStats({
 
   const isStatsVisible = !!(totalReplies || totalTweets || totalLikes);
 
+  const isLoggedIn = !!userId;
+
   return (
     <>
+      <Modal
+        modalClassName='max-w-lg bg-main-background w-full p-8 rounded-2xl'
+        open={open}
+        closeModal={closeModal}
+      >
+        <SignedOutModal closeModal={closeModal} />
+      </Modal>
+
       {viewTweet && (
         <ViewTweetStats
           likeMove={likeMove}
@@ -99,7 +115,7 @@ export function TweetStats({
           stats={currentReplies}
           iconName='ChatBubbleOvalLeftIcon'
           viewTweet={viewTweet}
-          onClick={openModal}
+          onClick={isLoggedIn ? openModal : signedOutOpenModal}
           disabled={reply}
         />
         <TweetOption
@@ -114,11 +130,15 @@ export function TweetStats({
           stats={currentTweets}
           iconName='ArrowPathRoundedSquareIcon'
           viewTweet={viewTweet}
-          onClick={manageRetweet(
-            tweetIsRetweeted ? 'unretweet' : 'retweet',
-            userId,
-            tweetId
-          )}
+          onClick={
+            isLoggedIn
+              ? manageRetweet(
+                  tweetIsRetweeted ? 'unretweet' : 'retweet',
+                  userId,
+                  tweetId
+                )
+              : signedOutOpenModal
+          }
         />
         <TweetOption
           className={cn(
@@ -132,13 +152,20 @@ export function TweetStats({
           stats={currentLikes}
           iconName='HeartIcon'
           viewTweet={viewTweet}
-          onClick={manageLike(
-            tweetIsLiked ? 'unlike' : 'like',
-            userId,
-            tweetId
-          )}
+          onClick={
+            isLoggedIn
+              ? manageLike(tweetIsLiked ? 'unlike' : 'like', userId, tweetId)
+              : signedOutOpenModal
+          }
         />
-        <TweetShare userId={userId} tweetId={tweetId} viewTweet={viewTweet} />
+
+        <TweetShare
+          userId={userId}
+          tweetId={tweetId}
+          viewTweet={viewTweet}
+          isLoggedIn={isLoggedIn}
+        />
+
         {isOwner && (
           <TweetOption
             className='hover:text-accent-blue focus-visible:text-accent-blue'

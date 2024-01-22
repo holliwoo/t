@@ -25,7 +25,7 @@ export default function TweetId(): JSX.Element {
   } = useRouter();
 
   const { data: tweetData, loading: tweetLoading } = useDocument(
-    doc(tweetsCollection, id as string),
+    doc(tweetsCollection, (id as string) ?? ' '),
     { includeUser: true, allowNull: true }
   );
 
@@ -34,7 +34,7 @@ export default function TweetId(): JSX.Element {
   const { data: repliesData, loading: repliesLoading } = useCollection(
     query(
       tweetsCollection,
-      where('parent.id', '==', id),
+      where('parent.id', '==', id ?? ' '),
       orderBy('createdAt', 'desc')
     ),
     { includeUser: true, allowNull: true }
@@ -94,9 +94,7 @@ export default function TweetId(): JSX.Element {
 }
 
 TweetId.getLayout = (page: ReactElement): ReactNode => (
-  <ProtectedLayout>
-    <MainLayout>
-      <HomeLayout>{page}</HomeLayout>
-    </MainLayout>
-  </ProtectedLayout>
+  <MainLayout>
+    <HomeLayout>{page}</HomeLayout>
+  </MainLayout>
 );

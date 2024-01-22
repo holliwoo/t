@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 
@@ -20,19 +22,26 @@ export function WindowContextProvider({
   children
 }: WindowContextProviderProps): JSX.Element {
   const [windowSize, setWindowSize] = useState<WindowSize>({
-    width: window.innerWidth,
-    height: window.innerHeight
+    width: 0,
+    height: 0
   });
 
   useEffect(() => {
-    const handleResize = (): void =>
+    if (typeof window !== 'undefined') {
       setWindowSize({
         width: window.innerWidth,
         height: window.innerHeight
       });
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+      const handleResize = (): void =>
+        setWindowSize({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
   }, []);
 
   const value: WindowContext = {

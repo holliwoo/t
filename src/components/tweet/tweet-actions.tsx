@@ -89,7 +89,9 @@ export function TweetActions({
     closeModal: pinCloseModal
   } = useModal();
 
-  const { id: userId, following, pinnedTweet } = user as User;
+  const { id: userId, following, pinnedTweet } = (user as User) ?? {};
+
+  const isLoggedIn = !!user;
 
   const isInAdminControl = isAdmin && !isOwner;
   const tweetIsPinned = pinnedTweet === tweetId;
@@ -140,7 +142,7 @@ export function TweetActions({
       );
     };
 
-  const userIsFollowed = following.includes(createdBy);
+  const userIsFollowed = isLoggedIn && following.includes(createdBy);
 
   const currentPinModalData = useMemo(
     () => pinModalData[+tweetIsPinned],
