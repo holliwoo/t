@@ -124,7 +124,7 @@ export function DM(): JSX.Element {
   if (!user) return <></>;
 
   return (
-    <div className='menu-container fixed bottom-0 right-5 flex w-[25rem] flex-col items-center rounded-t-2xl rounded-b-none bg-black'>
+    <div className='menu-container fixed bottom-0 right-5 hidden w-[25rem] flex-col items-center rounded-t-2xl rounded-b-none bg-black lg:flex'>
       <DMHeader />
 
       <div
