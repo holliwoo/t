@@ -18,7 +18,10 @@ const Icons = {
   TwitterIcon,
   FeatherIcon,
   SpinnerIcon,
-  TriangleIcon
+  TriangleIcon,
+  DoubleUpArrowIcon,
+  EnvelopePlusIcon,
+  SendMessageIcon
 };
 
 export function CustomIcon({
@@ -171,6 +174,64 @@ function PinOffIcon({ className }: IconProps): JSX.Element {
       <path d='M15 4.5l-3.249 3.249m-2.57 1.433l-2.181 .818l-1.5 1.5l7 7l1.5 -1.5l.82 -2.186m1.43 -2.563l3.25 -3.251' />
       <line x1='9' y1='15' x2='4.5' y2='19.5' />
       <line x1='14.5' y1='4' x2='20' y2='9.5' />
+    </svg>
+  );
+}
+
+function DoubleUpArrowIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg
+      className={className}
+      xmlns='http://www.w3.org/2000/svg'
+      width='24'
+      height='24'
+      viewBox='0 0 24 24'
+      aria-hidden='true'
+      //color='rgb(239, 243, 244)'
+      stroke='none'
+      fill='currentColor'
+    >
+      <g>
+        <path d='M12 2.59l9.46 9.45-1.42 1.42L12 5.41l-8.04 8.05-1.42-1.42L12 2.59zm0 7l9.46 9.45-1.42 1.42L12 12.41l-8.04 8.05-1.42-1.42L12 9.59z'></path>
+      </g>
+    </svg>
+  );
+}
+
+function EnvelopePlusIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg
+      className={className}
+      xmlns='http://www.w3.org/2000/svg'
+      width='24'
+      height='24'
+      viewBox='0 0 24 24'
+      aria-hidden='true'
+      stroke='none'
+      fill='currentColor'
+    >
+      <g>
+        <path d='M1.998 5.5c0-1.381 1.119-2.5 2.5-2.5h15c1.381 0 2.5 1.119 2.5 2.5V12h-2v-1.537l-8 3.635-8-3.635V18.5c0 .276.224.5.5.5H13v2H4.498c-1.381 0-2.5-1.119-2.5-2.5v-13zm2 2.766l8 3.635 8-3.635V5.5c0-.276-.224-.5-.5-.5h-15c-.276 0-.5.224-.5.5v2.766zM19 18v-3h2v3h3v2h-3v3h-2v-3h-3v-2h3z'></path>
+      </g>
+    </svg>
+  );
+}
+
+function SendMessageIcon({ className }: IconProps): JSX.Element {
+  return (
+    <svg
+      className={className}
+      xmlns='http://www.w3.org/2000/svg'
+      width='24'
+      height='24'
+      viewBox='0 0 24 24'
+      aria-hidden='true'
+      stroke='none'
+      fill='currentColor'
+    >
+      <g>
+        <path d='M2.504 21.866l.526-2.108C3.04 19.719 4 15.823 4 12s-.96-7.719-.97-7.757l-.527-2.109L22.236 12 2.504 21.866zM5.981 13c-.072 1.962-.34 3.833-.583 5.183L17.764 12 5.398 5.818c.242 1.349.51 3.221.583 5.183H10v2H5.981z'></path>
+      </g>
     </svg>
   );
 }

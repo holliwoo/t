@@ -1,3 +1,4 @@
+import { DM } from '@components/dm/dm';
 import cn from 'clsx';
 import type { ReactNode } from 'react';
 
@@ -18,6 +19,7 @@ export function MainContainer({
         className
       )}
     >
+      <DM />
       {children}
     </main>
   );

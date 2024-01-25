@@ -12,7 +12,8 @@ import {
   arrayUnion,
   arrayRemove,
   serverTimestamp,
-  getCountFromServer
+  getCountFromServer,
+  getDoc
 } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { db, storage } from './app';
@@ -23,7 +24,11 @@ import {
   userBookmarksCollection
 } from './collections';
 import type { WithFieldValue, Query } from 'firebase/firestore';
-import type { EditableUserData } from '@lib/types/user';
+import {
+  userConverter,
+  type EditableUserData,
+  type User
+} from '@lib/types/user';
 import type { FilesWithId, ImagesPreview } from '@lib/types/file';
 import type { Bookmark } from '@lib/types/bookmark';
 import type { Theme, Accent } from '@lib/types/theme';
@@ -285,4 +290,22 @@ export async function clearAllBookmarks(userId: string): Promise<void> {
   bookmarksSnapshot.forEach(({ ref }) => batch.delete(ref));
 
   await batch.commit();
+}
+
+export async function getUser(userId: string): Promise<User | null> {
+  const userRef = doc(usersCollection, userId);
+
+  try {
+    const userSnapshot = await getDoc(userRef);
+
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+      return userData as User;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return null;
+  }
 }
