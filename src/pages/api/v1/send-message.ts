@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { connectMongoDB, key } from '@lib/mongo/mongodb';
 import { DM } from '@lib/models/dm';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { MediaData } from '@lib/types/file';
 
 export const config = {
   api: {
@@ -13,14 +14,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  const { message, senderId, receiverId } = req.body;
+  const { message, media, senderId, receiverId } = req.body;
   try {
     await connectMongoDB('user-messages');
 
     const { encryptedMessage, iv } = encryptMessage(message);
 
-    console.log('Unencrypted Message:', message);
-    console.log('Encrypted Message:', encryptedMessage);
+    // console.log('Media:', media);
+    // console.log('Unencrypted Message:', message);
+    // console.log('Encrypted Message:', encryptedMessage);
 
     const existingConversation = await DM.findOne({
       users: { $all: [senderId, receiverId] }
@@ -32,6 +34,7 @@ export default async function handler(
         messages: [
           {
             message: encryptedMessage,
+            media,
             senderId,
             receiverId: receiverId,
             iv
@@ -49,8 +52,9 @@ export default async function handler(
           messages: {
             senderId,
             receiverId: receiverId,
+            iv,
             message: encryptedMessage,
-            iv
+            media
           }
         }
       }

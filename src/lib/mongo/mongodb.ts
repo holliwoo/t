@@ -57,5 +57,5 @@ export const key = crypto
 export async function getCollection(collectionName: string) {
   const client = await clientPromise;
   const db = client.db('user-messages');
-  return db.collection(collectionName);
+  return await db.collection(collectionName);
 }

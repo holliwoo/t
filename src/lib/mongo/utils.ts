@@ -1,17 +1,20 @@
 import type { DMs } from '@lib/types/dm';
+import type { MediaData } from '@lib/types/file';
 
 export async function sendMessage(
   senderId: string,
   receiverId: string,
-  message: string
+  message: string,
+  media?: MediaData[]
 ): Promise<void> {
+  if (senderId === receiverId) return;
   try {
     const response = await fetch('/api/v1/send-message', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ message, senderId, receiverId })
+      body: JSON.stringify({ message, media, senderId, receiverId })
     });
   } catch (err) {
     console.log(err);

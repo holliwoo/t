@@ -35,6 +35,7 @@ export default async function handler(
           senderId: message.senderId,
           receiverId: message.receiverId,
           message: decryptedMessage,
+          media: message.media,
           createdAt: message.createdAt,
           updatedAt: message.updatedAt
         };

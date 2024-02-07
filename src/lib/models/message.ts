@@ -1,11 +1,22 @@
 import { Schema } from 'mongoose';
 
-export const messageSchema = new Schema(
+const mediaSchema = new Schema(
   {
-    message: {
+    type: {
       type: String,
       required: true
     },
+    src: {
+      type: String,
+      required: true
+    }
+  },
+  { timestamps: true }
+);
+
+export const messageSchema = new Schema(
+  {
+    // If group-chats are implemented, this will be needed
     senderId: {
       type: String,
       required: true
@@ -17,7 +28,12 @@ export const messageSchema = new Schema(
     iv: {
       type: String,
       required: true
-    }
+    },
+    message: {
+      type: String,
+      required: true
+    },
+    media: [mediaSchema]
   },
   { timestamps: true }
 );

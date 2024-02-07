@@ -2,9 +2,7 @@ import { connectMongoDB } from '@lib/mongo/mongodb';
 import { DM } from '@lib/models/dm';
 import { decryptMessage } from './get-dm';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { UserDM, UserDMs } from '@lib/types/dm';
-import { Message } from '@lib/types/message';
-import { Timestamp } from 'mongodb';
+import type { UserDMs } from '@lib/types/dm';
 
 export const config = {
   api: {
@@ -38,6 +36,7 @@ export default async function handler(
               senderId: message.senderId,
               receiverId: message.receiverId,
               message: decryptMessage(message.message, message.iv) as string,
+              media: message.media,
               createdAt: message.createdAt,
               updatedAt: message.updatedAt
             };
@@ -48,42 +47,10 @@ export default async function handler(
       }
     );
 
-    console.log('Decrypted Conversation:', decryptedConversations);
-    console.log('Decrypted message:', decryptedConversations[0].messages);
+    //console.log('Decrypted Conversation:', decryptedConversations);
 
     return res.status(200).json({ dm: decryptedConversations });
   } catch (err) {
     console.log(err);
   }
 }
-
-/*
-  const decryptedConversations: UserDMs = conversations.map(
-      (conversation: any) => {
-        const lastMessage =
-          conversation.messages[conversation.messages.length - 1];
-
-        const decryptedMessage = decryptMessage(
-          lastMessage.message,
-          lastMessage.iv
-        );
-
-        const latestMessage: Message = {
-          id: lastMessage._id,
-          senderId: lastMessage.senderId,
-          receiverId: lastMessage.receiverId,
-          message: decryptedMessage as string,
-          createdAt: lastMessage.createdAt,
-          updatedAt: lastMessage.updatedAt
-        };
-
-        return {
-          id: conversation._id,
-          users: conversation.users,
-          messages: [latestMessage],
-          createdAt: lastMessage.createdAt,
-          updatedAt: lastMessage.updatedAt
-        };
-      }
-    );
-*/
