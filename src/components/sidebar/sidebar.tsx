@@ -37,8 +37,7 @@ const navLinks: Readonly<NavLink[]> = [
   {
     href: '/notifications',
     linkName: 'Notifications',
-    iconName: 'BellIcon',
-    disabled: true
+    iconName: 'BellIcon'
   },
   {
     href: '/messages',

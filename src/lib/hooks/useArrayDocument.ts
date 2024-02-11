@@ -79,6 +79,8 @@ export function useArrayDocument<T>(
         setData(null);
         setLoading(false);
       }
+
+      console.log(data);
     };
 
     void fetchData();

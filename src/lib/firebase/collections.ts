@@ -3,8 +3,10 @@ import { userConverter } from '@lib/types/user';
 import { tweetConverter } from '@lib/types/tweet';
 import { bookmarkConverter } from '@lib/types/bookmark';
 import { statsConverter } from '@lib/types/stats';
+import { notificationsConverter } from '@lib/types/notification';
 import { db } from './app';
 import type { CollectionReference } from 'firebase/firestore';
+import type { UserNotification } from '@lib/types/notification';
 import type { Bookmark } from '@lib/types/bookmark';
 import type { Stats } from '@lib/types/stats';
 
@@ -26,4 +28,12 @@ export function userBookmarksCollection(
 
 export function userStatsCollection(id: string): CollectionReference<Stats> {
   return collection(db, `users/${id}/stats`).withConverter(statsConverter);
+}
+
+export function userNotificationsCollection(
+  id: string
+): CollectionReference<UserNotification> {
+  return collection(db, `users/${id}/notifications`).withConverter(
+    notificationsConverter
+  );
 }

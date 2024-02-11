@@ -16,7 +16,8 @@ import { auth } from '@lib/firebase/app';
 import {
   usersCollection,
   userStatsCollection,
-  userBookmarksCollection
+  userBookmarksCollection,
+  userNotificationsCollection
 } from '@lib/firebase/collections';
 import { getRandomId, getRandomInt } from '@lib/random';
 import { checkUsernameAvailability } from '@lib/firebase/utils';
@@ -26,6 +27,7 @@ import type { WithFieldValue } from 'firebase/firestore';
 import type { User } from '@lib/types/user';
 import type { Bookmark } from '@lib/types/bookmark';
 import type { Stats } from '@lib/types/stats';
+import type { UserNotification } from '@lib/types/notification';
 
 type AuthContext = {
   user: User | null;
@@ -49,6 +51,9 @@ export function AuthContextProvider({
 }: AuthContextProviderProps): JSX.Element {
   const [user, setUser] = useState<User | null>(null);
   const [userBookmarks, setUserBookmarks] = useState<Bookmark[] | null>(null);
+  const [userNotifications, setUserNotifications] = useState<
+    UserNotification[] | null
+  >(null);
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -151,9 +156,18 @@ export function AuthContextProvider({
       }
     );
 
+    const unsubscribeNotifications = onSnapshot(
+      userNotificationsCollection(id),
+      (snapshot) => {
+        const notifications = snapshot.docs.map((doc) => doc.data());
+        setUserNotifications(notifications);
+      }
+    );
+
     return () => {
       unsubscribeUser();
       unsubscribeBookmarks();
+      unsubscribeNotifications();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
