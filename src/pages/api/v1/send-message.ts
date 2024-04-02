@@ -20,23 +20,19 @@ export default async function handler(
 
     const { encryptedMessage, iv } = encryptMessage(message);
 
-    // console.log('Media:', media);
-    // console.log('Unencrypted Message:', message);
-    // console.log('Encrypted Message:', encryptedMessage);
-
     const existingConversation = await DM.findOne({
       users: { $all: [senderId, receiverId] }
     });
 
     if (!existingConversation) {
-      DM.create({
+      await DM.create({
         users: [senderId, receiverId],
         messages: [
           {
             message: encryptedMessage,
             media,
             senderId,
-            receiverId: receiverId,
+            receiverId,
             iv
           }
         ]
@@ -51,7 +47,7 @@ export default async function handler(
         $addToSet: {
           messages: {
             senderId,
-            receiverId: receiverId,
+            receiverId,
             iv,
             message: encryptedMessage,
             media
@@ -63,6 +59,7 @@ export default async function handler(
     return res.status(200).json({ message: 'Updated Conversation' });
   } catch (err) {
     console.log(err);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 
