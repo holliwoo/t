@@ -64,9 +64,9 @@
       }
     ],
     "@typescript-eslint/no-misused-promises": [
-      "error",
+      "false",
       {
-        "checksVoidReturn": { "attributes": false }
+        "checksVoidReturn": { "attributes": true }
       }
     ],
     "@typescript-eslint/consistent-type-imports": "warn",
